@@ -1,0 +1,6 @@
+torch
+transformers
+bitsandbytes
+python-dotenv
+nltk
+peft
