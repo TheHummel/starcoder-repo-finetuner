@@ -2,4 +2,6 @@
 
 /venv
 
-/starcoder_3b_local
+/models/starcoder_3b_local
+
+/data/scrapy/repo
