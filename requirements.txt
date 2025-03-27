@@ -4,3 +4,4 @@ bitsandbytes
 python-dotenv
 nltk
 peft
+scrapy
