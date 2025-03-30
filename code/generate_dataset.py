@@ -3,10 +3,10 @@ import random
 from tqdm import tqdm
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
-source_dir = os.path.join(script_dir, "..", "data", "repos", "scrapy", "scrapy")
-output_dir = os.path.join(script_dir, "..", "data", "training", "completion")
-# source_dir = os.path.join(script_dir, "..", "data", "evaluation", "projects")
-# source_dir = os.path.join(script_dir, "..", "data", "evaluation", "snippets")
+# source_dir = os.path.join(script_dir, "..", "data", "repos", "scrapy", "scrapy")
+# output_dir = os.path.join(script_dir, "..", "data", "training", "completion")
+source_dir = os.path.join(script_dir, "..", "data", "evaluation", "projects")
+output_dir = os.path.join(script_dir, "..", "data", "evaluation", "snippets")
 
 if not os.path.isdir(source_dir):
     raise ValueError(f"Source directory {source_dir} not found")
@@ -14,7 +14,7 @@ if not os.path.exists(output_dir):
     os.makedirs(output_dir)
 
 
-def extract_structural_snippets(file_path, num_snippets=10):
+def extract_structural_snippets(file_path, num_snippets=20, two_line_target=False):
     with open(file_path, "r", encoding="utf-8") as f:
         lines = f.readlines()
     snippets = []
@@ -27,7 +27,8 @@ def extract_structural_snippets(file_path, num_snippets=10):
             if i + 1 < len(lines):
                 target = lines[i].rstrip()
                 if (
-                    i + 2 < len(lines)
+                    two_line_target
+                    and i + 2 < len(lines)
                     and lines[i + 1].strip()
                     and not lines[i + 1].strip().startswith("#")
                     and not lines[i + 1].strip().startswith('"""')
@@ -40,7 +41,7 @@ def extract_structural_snippets(file_path, num_snippets=10):
     return random.sample(snippets, min(num_snippets, len(snippets))) if snippets else []
 
 
-def extract_assignment_snippets(file_path, num_snippets=10):
+def extract_assignment_snippets(file_path, num_snippets=30):
     with open(file_path, "r", encoding="utf-8") as f:
         lines = f.readlines()
     snippets = []
@@ -76,15 +77,16 @@ def extract_assignment_snippets(file_path, num_snippets=10):
 
 count = 0
 all_snippets = []
-for root, _, files in os.walk(source_dir):
+for root, projects, files in os.walk(source_dir):
     for file in tqdm(files, desc="Processing files"):
         if file.endswith(".py") or file.endswith(".py.tmpl"):
             path = os.path.join(root, file)
             file_base = os.path.splitext(file)[0]
+            project = path.split("projects/")[-1].split("/")[0]
             structural = extract_structural_snippets(path)
             assignments = extract_assignment_snippets(path)
             all_snippets.extend(
-                (file_base, prefix, target)
+                (project, file_base, prefix, target)
                 for prefix, target in structural + assignments
             )
             print(len((assignments)))
@@ -92,8 +94,10 @@ for root, _, files in os.walk(source_dir):
         #     break
 
 random.shuffle(all_snippets)
-for i, (file_base, prefix, target) in enumerate(all_snippets, 1):
-    with open(f"{output_dir}/{file_base}_{i:03d}.txt", "w", encoding="utf-8") as f:
+for i, (project, file_base, prefix, target) in enumerate(all_snippets, 1):
+    with open(
+        f"{output_dir}/{project}_{file_base}_{i:03d}.txt", "w", encoding="utf-8"
+    ) as f:
         f.write(f"Input: {prefix}\nOutput: {target}\n")
     count += 1
 
