@@ -5,3 +5,4 @@ python-dotenv
 nltk
 peft
 scrapy
+scrapy-splash
