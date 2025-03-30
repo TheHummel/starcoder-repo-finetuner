@@ -5,8 +5,8 @@ from tqdm import tqdm
 script_dir = os.path.dirname(os.path.abspath(__file__))
 source_dir = os.path.join(script_dir, "..", "data", "repos", "scrapy", "scrapy")
 output_dir = os.path.join(script_dir, "..", "data", "training", "completion")
-# source_dir = os.path.join(script_dir, "stock_spider", "spiders")
-# output_dir = os.path.join(script_dir, "stock_spider", "data", "evaluation")
+# source_dir = os.path.join(script_dir, "..", "data", "evaluation", "projects")
+# source_dir = os.path.join(script_dir, "..", "data", "evaluation", "snippets")
 
 if not os.path.isdir(source_dir):
     raise ValueError(f"Source directory {source_dir} not found")
@@ -78,7 +78,7 @@ count = 0
 all_snippets = []
 for root, _, files in os.walk(source_dir):
     for file in tqdm(files, desc="Processing files"):
-        if file.endswith(".py"):
+        if file.endswith(".py") or file.endswith(".py.tmpl"):
             path = os.path.join(root, file)
             file_base = os.path.splitext(file)[0]
             structural = extract_structural_snippets(path)
