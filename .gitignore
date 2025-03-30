@@ -8,7 +8,7 @@
 
 /data/repos
 /data/training
-/data/evaluation/news_spider/*.json
-/data/evaluation/price_spider/downloads
-/data/evaluation/price_spider/*.json
-/data/evaluation/stock_spider/*.json
+/data/evaluation/projects/news_spider/*.json
+/data/evaluation/projects/price_spider/downloads
+/data/evaluation/projects/price_spider/*.json
+/data/evaluation/projects/stock_spider/*.json
