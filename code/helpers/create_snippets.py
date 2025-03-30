@@ -5,7 +5,7 @@ def extract_structural_snippets(lines, num_snippets=20, max_prev_lines=None):
     snippets = []
     for i, line in enumerate(lines):
         stripped = line.strip()
-        if stripped and not stripped.startswith("#"):
+        if stripped and not (stripped.startswith("#") or stripped.startswith('"""')):
             if i > 0:
                 start = max(0, i - max_prev_lines) if max_prev_lines is not None else 0
                 prefix = "".join(lines[start:i])
