@@ -16,6 +16,10 @@ print("Model loaded!")
 
 
 def generate_code(prompt: str, max_length: int = 20) -> str:
+    newline_id = tokenizer.encode("\n", add_special_tokens=False)[0]
+    tokenizer.pad_token = "\n"
+    tokenizer.eos_token = "\n"
+
     inputs = tokenizer(prompt, return_tensors="pt", padding=True, truncation=True)
     outputs = model.generate(
         inputs["input_ids"],
@@ -24,9 +28,16 @@ def generate_code(prompt: str, max_length: int = 20) -> str:
         num_return_sequences=1,
         do_sample=True,
         temperature=0.7,
+        pad_token_id=newline_id,
+        eos_token_id=newline_id,
     )
     full_generated = tokenizer.decode(outputs[0], skip_special_tokens=True).strip()
-    return full_generated
+
+    # take first new line after prompt, or full output if no \n
+    generated_after_prompt = full_generated[len(prompt) :].strip()
+    return (
+        generated_after_prompt.split("\n")[0].strip() if generated_after_prompt else ""
+    )
 
 
 def generate_outputs(inputs_path: str) -> list[dict]:
