@@ -59,7 +59,7 @@ def generate_outputs(inputs_path: str) -> list[dict]:
             # print(f"Output: {output}")
             # print()
 
-            results.append({"prompt": input_text, "output": output, "target": target})
+            results.append({"input": input_text, "output": output, "target": target})
 
     output_path = os.path.join(current_path, "outputs.json")
     with open(output_path, "w", encoding="utf-8") as f:
