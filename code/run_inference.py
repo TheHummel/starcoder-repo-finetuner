@@ -6,16 +6,14 @@ import json
 
 
 current_path = os.path.dirname(os.path.abspath(__file__))
-model_path = os.path.join(current_path, "../models/starcoder_3b_local")
-tokenizer = AutoTokenizer.from_pretrained(model_path, padding_side="left")
-tokenizer.pad_token = tokenizer.eos_token
-model = AutoModelForCausalLM.from_pretrained(
-    model_path, torch_dtype=torch.float16, device_map="cpu"
-)
-print("Model loaded!")
 
 
-def generate_code(prompt: str, max_length: int = 20) -> str:
+def generate_code(
+    model: AutoModelForCausalLM,
+    tokenizer: AutoTokenizer,
+    prompt: str,
+    max_length: int = 20,
+) -> str:
     newline_id = tokenizer.encode("\n", add_special_tokens=False)[0]
     tokenizer.pad_token = "\n"
     tokenizer.eos_token = "\n"
@@ -40,9 +38,19 @@ def generate_code(prompt: str, max_length: int = 20) -> str:
     )
 
 
-def generate_outputs(inputs_path: str) -> list[dict]:
+def run_inference(inputs_path: str, model_path: str) -> list[dict]:
     if not os.path.exists(inputs_path):
         raise FileNotFoundError(f"File not found: {inputs_path}")
+
+    if not os.path.exists(model_path):
+        raise FileNotFoundError(f"File not found: {model_path}")
+
+    tokenizer = AutoTokenizer.from_pretrained(model_path, padding_side="left")
+    tokenizer.pad_token = tokenizer.eos_token
+    model = AutoModelForCausalLM.from_pretrained(
+        model_path, torch_dtype=torch.float16, device_map="cpu"
+    )
+    print("Model loaded!")
 
     results = []
 
@@ -55,7 +63,7 @@ def generate_outputs(inputs_path: str) -> list[dict]:
                 input_text, target = text.split("Output: ")
                 input_text = input_text.replace("Input: ", "").strip()
             # print(f"Prompt: {input_text}")
-            output = generate_code(input_text)
+            output = generate_code(model, tokenizer, input_text)
             # print(f"Output: {output}")
             # print()
 
@@ -71,4 +79,5 @@ def generate_outputs(inputs_path: str) -> list[dict]:
 
 if __name__ == "__main__":
     input_path = os.path.join(current_path, "..", "data", "evaluation", "snippets")
-    generate_outputs(input_path)
+    model_path = os.path.join(current_path, "../models/starcoder_3b_local")
+    run_inference(input_path, model_path)
