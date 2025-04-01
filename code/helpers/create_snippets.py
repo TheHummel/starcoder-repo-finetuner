@@ -1,11 +1,19 @@
 import random
 
 
-def extract_structural_snippets(lines, num_snippets=20, max_prev_lines=None):
+def extract_structural_snippets(
+    lines: list,
+    num_snippets: int = 20,
+    max_prev_lines: int = None,
+):
     snippets = []
     for i, line in enumerate(lines):
         stripped = line.strip()
-        if stripped and not (stripped.startswith("#") or stripped.startswith('"""')):
+        if stripped and not (
+            stripped.startswith("#")
+            or stripped.startswith('"""')
+            or stripped.startswith("import")
+        ):
             if i > 0:
                 start = max(0, i - max_prev_lines) if max_prev_lines is not None else 0
                 prefix = "".join(lines[start:i])
@@ -14,7 +22,12 @@ def extract_structural_snippets(lines, num_snippets=20, max_prev_lines=None):
     return random.sample(snippets, min(num_snippets, len(snippets))) if snippets else []
 
 
-def extract_assignment_snippets(lines, num_snippets=30, max_prev_lines=None):
+def extract_assignment_snippets(
+    lines: list,
+    num_snippets: int = 30,
+    max_prev_lines: int = None,
+):
+    # used for python only
     snippets = []
     in_def = False
     for i, line in enumerate(lines):
