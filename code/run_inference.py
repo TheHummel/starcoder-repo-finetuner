@@ -62,6 +62,7 @@ def run_inference(inputs_path: str, model_path: str) -> list[dict]:
                 text = f.read()
                 input_text, target = text.split("Output: ")
                 input_text = input_text.replace("Input: ", "").strip()
+                target = target.strip()
             # print(f"Prompt: {input_text}")
             output = generate_code(model, tokenizer, input_text)
             # print(f"Output: {output}")
@@ -69,7 +70,6 @@ def run_inference(inputs_path: str, model_path: str) -> list[dict]:
 
             results.append({"input": input_text, "output": output, "target": target})
 
-    output_path = os.path.join(current_path, "outputs.json")
     with open(output_path, "w", encoding="utf-8") as f:
         json.dump(results, f, indent=2)
     print(f"Results saved to {output_path}")
@@ -79,5 +79,10 @@ def run_inference(inputs_path: str, model_path: str) -> list[dict]:
 
 if __name__ == "__main__":
     input_path = os.path.join(current_path, "..", "data", "evaluation", "snippets")
-    model_path = os.path.join(current_path, "../models/starcoder_3b_local")
+    model = "starcoder_3b_local"
+    model_path = os.path.join(current_path, "..", "models", model)
+    output_path = os.path.join(current_path, "predictions.json")
+    output_path = os.path.join(
+        current_path, "..", "data", "evaluation", "finetuned_predictions.json"
+    )
     run_inference(input_path, model_path)
