@@ -25,9 +25,7 @@ def convert_dataset_to_jsonl():
                     prompt = prompt.replace("Input: ", "").strip()
                     completion = completion.strip()
                     # combine prompt and completion with a separator
-                    f_out.write(
-                        json.dumps({"text": f"{prompt} ### {completion}"}) + "\n"
-                    )
+                    f_out.write(json.dumps({"text": f"{prompt}\n{completion}"}) + "\n")
 
     print(f"Dataset prepared at {output_file}")
 
