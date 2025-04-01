@@ -6,3 +6,5 @@ nltk
 peft
 scrapy
 scrapy-splash
+datasets
+accelerate
