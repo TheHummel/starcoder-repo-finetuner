@@ -5,6 +5,7 @@ from helpers.create_snippets import (
     extract_structural_snippets,
     extract_assignment_snippets,
 )
+from helpers.convert_data import convert_dataset_to_jsonl
 
 
 def generate_evaluation_set(
@@ -66,3 +67,9 @@ if __name__ == "__main__":
     generate_evaluation_set(
         source_dir, output_dir, file_types=["ts", "tsx"], filter="practicequiz"
     )
+
+    input_dir = output_dir
+    output_file = os.path.join(
+        current_dir, "..", "data", "evaluation", "evaluation.jsonl"
+    )
+    convert_dataset_to_jsonl(input_dir, output_file)

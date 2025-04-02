@@ -6,28 +6,7 @@ from helpers.create_snippets import (
     extract_structural_snippets,
     extract_assignment_snippets,
 )
-
-
-def convert_dataset_to_jsonl():
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    input_dir = os.path.join(script_dir, "..", "data", "training", "completion")
-    output_file = os.path.join(script_dir, "..", "data", "training", "train.jsonl")
-
-    os.makedirs(os.path.dirname(output_file), exist_ok=True)
-    with open(output_file, "w", encoding="utf-8") as f_out:
-        for filename in os.listdir(input_dir):
-            if filename.endswith(".txt"):
-                with open(
-                    os.path.join(input_dir, filename), "r", encoding="utf-8"
-                ) as f_in:
-                    text = f_in.read()
-                    prompt, completion = text.split("Output: ")
-                    prompt = prompt.replace("Input: ", "").strip()
-                    completion = completion.strip()
-                    # combine prompt and completion with a separator
-                    f_out.write(json.dumps({"text": f"{prompt}\n{completion}"}) + "\n")
-
-    print(f"Dataset prepared at {output_file}")
+from helpers.convert_data import convert_dataset_to_jsonl
 
 
 def generate_dataset(
@@ -90,4 +69,7 @@ if __name__ == "__main__":
     generate_dataset(
         source_dir, output_dir, file_types=["ts", "tsx"], filter="practicequiz"
     )
-    # convert_dataset_to_jsonl()
+
+    input_dir = output_dir
+    output_file = os.path.join(script_dir, "..", "data", "training", "train.jsonl")
+    convert_dataset_to_jsonl(input_dir, output_file)
