@@ -8,7 +8,7 @@ import json
 current_path = os.path.dirname(os.path.abspath(__file__))
 
 
-def generate_code(
+def run_model(
     model: AutoModelForCausalLM,
     tokenizer: AutoTokenizer,
     prompt: str,
@@ -38,7 +38,7 @@ def generate_code(
     )
 
 
-def run_inference(inputs_path: str, model_path: str) -> list[dict]:
+def generate_completion_outputs(inputs_path: str, model_path: str) -> list[dict]:
     if not os.path.exists(inputs_path):
         raise FileNotFoundError(f"File not found: {inputs_path}")
 
@@ -64,7 +64,7 @@ def run_inference(inputs_path: str, model_path: str) -> list[dict]:
                 input_text = input_text.replace("Input: ", "").strip()
                 target = target.strip()
             # print(f"Prompt: {input_text}")
-            output = generate_code(model, tokenizer, input_text)
+            output = run_model(model, tokenizer, input_text)
             # print(f"Output: {output}")
             # print()
 
@@ -81,8 +81,7 @@ if __name__ == "__main__":
     input_path = os.path.join(current_path, "..", "data", "evaluation", "snippets")
     model = "starcoder_3b_local"
     model_path = os.path.join(current_path, "..", "models", model)
-    output_path = os.path.join(current_path, "predictions.json")
     output_path = os.path.join(
         current_path, "..", "data", "evaluation", "finetuned_predictions.json"
     )
-    run_inference(input_path, model_path)
+    generate_completion_outputs(input_path, model_path)
