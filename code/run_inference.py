@@ -4,6 +4,8 @@ from transformers import AutoModelForCausalLM, AutoTokenizer
 from tqdm import tqdm
 import json
 
+from helpers.load_model import load_model
+
 
 current_path = os.path.dirname(os.path.abspath(__file__))
 
@@ -38,19 +40,11 @@ def run_model(
     )
 
 
-def generate_completion_outputs(inputs_path: str, model_path: str) -> list[dict]:
+def generate_completion_outputs(
+    inputs_path: str, output_path, model, tokenizer
+) -> list[dict]:
     if not os.path.exists(inputs_path):
         raise FileNotFoundError(f"File not found: {inputs_path}")
-
-    if not os.path.exists(model_path):
-        raise FileNotFoundError(f"File not found: {model_path}")
-
-    tokenizer = AutoTokenizer.from_pretrained(model_path, padding_side="left")
-    tokenizer.pad_token = tokenizer.eos_token
-    model = AutoModelForCausalLM.from_pretrained(
-        model_path, torch_dtype=torch.float16, device_map="cpu"
-    )
-    print("Model loaded!")
 
     results = []
 
@@ -84,4 +78,5 @@ if __name__ == "__main__":
     output_path = os.path.join(
         current_path, "..", "data", "evaluation", "finetuned_predictions.json"
     )
-    generate_completion_outputs(input_path, model_path)
+    model, tokenizer = load_model(model_path)
+    generate_completion_outputs(input_path, output_path, model, tokenizer)
