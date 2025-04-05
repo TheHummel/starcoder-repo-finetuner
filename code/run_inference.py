@@ -40,33 +40,44 @@ def run_model(
 
 
 def generate_completion_outputs(
-    inputs_path: str, output_path, model, tokenizer
-) -> list[dict]:
+    inputs_path: str,
+    output_path: str,
+    model,
+    tokenizer,
+    separator="__###__",
+    subset_size=None,
+):
     if not os.path.exists(inputs_path):
         raise FileNotFoundError(f"File not found: {inputs_path}")
 
     results = []
+    with open(inputs_path, "r", encoding="utf-8") as f:
+        eval_lines = f.readlines()
+    if subset_size:
+        eval_lines = random.sample(eval_lines, min(subset_size, len(eval_lines)))
 
-    for root, _, files in os.walk(inputs_path):
-        for file in tqdm(files, desc="Generating outputs", total=len(files)):
-            if not file.endswith(".txt"):
+    for line in tqdm(eval_lines, desc="Generating outputs", total=len(eval_lines)):
+        try:
+            entry = json.loads(line.strip())
+            if "text" not in entry:
                 continue
-            with open(os.path.join(root, file), "r", encoding="utf-8") as f:
-                text = f.read()
-                input_text, target = text.split("Output: ")
-                input_text = input_text.replace("Input: ", "").strip()
-                target = target.strip()
-            # print(f"Prompt: {input_text}")
-            output = run_model(model, tokenizer, input_text)
-            # print(f"Output: {output}")
-            # print()
+            text = entry["text"]
+            if separator not in text:
+                continue
+            input_text, target = text.split(separator)
+            input_text = input_text.strip()
+            target = target.strip()
 
+            output = run_model(model, tokenizer, input_text)
             results.append({"input": input_text, "output": output, "target": target})
+
+        except (json.JSONDecodeError, ValueError):
+            print(f"Error processing line: {line.strip()}")
+            continue
 
     with open(output_path, "w", encoding="utf-8") as f:
         json.dump(results, f, indent=2)
-    print(f"Results saved to {output_path}")
-
+    print(f"Eval results saved to {output_path}")
     return results
 
 
