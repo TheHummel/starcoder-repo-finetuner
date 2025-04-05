@@ -1,7 +1,9 @@
 import os
+import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer
 from tqdm import tqdm
 import json
+import random
 
 from helpers.load_model import load_model
 
@@ -15,17 +17,22 @@ def run_model(
     prompt: str,
     max_length: int = 20,
 ) -> str:
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    model.to(device)
+
     newline_id = tokenizer.encode("\n", add_special_tokens=False)[0]
     tokenizer.pad_token = "\n"
     tokenizer.eos_token = "\n"
 
     inputs = tokenizer(prompt, return_tensors="pt", padding=True, truncation=True)
+    inputs = {key: value.to(device) for key, value in inputs.items()}
+
     outputs = model.generate(
         inputs["input_ids"],
         attention_mask=inputs["attention_mask"],
         max_new_tokens=max_length,
         num_return_sequences=1,
-        do_sample=True,
+        do_sample=False,
         temperature=0.7,
         pad_token_id=newline_id,
         eos_token_id=newline_id,
