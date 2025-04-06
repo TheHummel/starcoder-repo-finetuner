@@ -1,10 +1,8 @@
 torch
 transformers
-bitsandbytes
 python-dotenv
 nltk
 peft
-scrapy
-scrapy-splash
 datasets
 accelerate
+tqdm

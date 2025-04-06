@@ -5,7 +5,7 @@
 /venv
 
 /models/starcoder_3b_local
-models/archive
+/models/archive
 
 /data/repos
 /data/training
