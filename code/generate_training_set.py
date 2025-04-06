@@ -18,6 +18,16 @@ def generate_dataset(
     filters_out: list[str] = None,
     filters_in: list[str] = None,
 ):
+    """
+    Generate snippets from source code files and save them to the output directory.
+    Args:
+        source_dirs (list[str]): List of source directories containing source code files
+        output_dir (str): Output directory to save snippets
+        file_types (list[str]): List of file extensions to process
+        filters_out (list[str], optional): List of strings to filter out files containing these strings.
+        filters_in (list[str], optional): List of strings to include files containing these strings.
+    """
+
     os.makedirs(output_dir, exist_ok=True)
     all_snippets = []
 

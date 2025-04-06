@@ -23,8 +23,10 @@ def generate_evaluation_set(
         source_dirs (list[str]): List of source directories containing source code files
         output_dir (str): Output directory to save evaluation snippets
         file_types (list[str]): List of file extensions to process
-        filter (str, optional): Filter to include files containing this string. Defaults to None.
+        filters_out (list[str], optional): List of strings to filter out files containing these strings.
+        filters_in (list[str], optional): List of strings to include files containing these strings.
     """
+
     os.makedirs(output_dir, exist_ok=True)
     all_snippets = []
     count_files = 0
