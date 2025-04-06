@@ -79,6 +79,13 @@ def evaluate_predictions(baseline_data, finetuned_data):
     finetuned_accuracy = finetuned_exact_matches / total
     finetuned_avg_bleu = finetuned_bleu_sum / total
 
+    scores = {
+        "baseline_accuracy": baseline_accuracy,
+        "baseline_avg_bleu": baseline_avg_bleu,
+        "finetuned_accuracy": finetuned_accuracy,
+        "finetuned_avg_bleu": finetuned_avg_bleu,
+    }
+
     print(
         f"Baseline Exact Match Accuracy: {baseline_accuracy:.2%} ({baseline_exact_matches}/{total})"
     )
@@ -88,7 +95,7 @@ def evaluate_predictions(baseline_data, finetuned_data):
     )
     print(f"Finetuned Average BLEU Score: {finetuned_avg_bleu:.4f}")
 
-    return results
+    return results, scores
 
 
 if __name__ == "__main__":
@@ -98,19 +105,25 @@ if __name__ == "__main__":
     finetuned_json = os.path.join(
         current_path, "..", "data", "evaluation", "finetuned_predictions.json"
     )
-    output_file = os.path.join(
+    comparison_file = os.path.join(
         current_path, "..", "data", "evaluation", "comparison.jsonl"
+    )
+    scores_file = os.path.join(
+        current_path, "..", "data", "evaluation", "comparison_summary.json"
     )
 
     baseline_data = load_json(baseline_json)
     finetuned_data = load_json(finetuned_json)
 
-    results = evaluate_predictions(baseline_data, finetuned_data)
+    results, scores = evaluate_predictions(baseline_data, finetuned_data)
 
     # save results
-    os.makedirs(os.path.dirname(output_file), exist_ok=True)
-    with open(output_file, "w", encoding="utf-8") as f:
+    os.makedirs(os.path.dirname(comparison_file), exist_ok=True)
+    with open(comparison_file, "w", encoding="utf-8") as f:
         for result in results:
             f.write(json.dumps(result) + "\n")
 
-    print(f"Comparison saved to {output_file}")
+    with open(scores_file, "w", encoding="utf-8") as f:
+        json.dump(scores, f, indent=2)
+
+    print(f"Comparison saved!")
