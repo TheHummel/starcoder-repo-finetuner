@@ -1,0 +1,6 @@
+{
+  "baseline_accuracy": 0.40822072072072074,
+  "baseline_avg_bleu": 0.24702940690182248,
+  "finetuned_accuracy": 0.4313063063063063,
+  "finetuned_avg_bleu": 0.2580600152977457
+}
